@@ -1,0 +1,103 @@
+
+CREATE OR REPLACE TRIGGER NO_HP_PELANGGAN_KURANG12DIGIT_AFTER_UPDATE
+   AFTER UPDATE 
+   ON PELANGGAN 
+   FOR EACH ROW
+DECLARE
+   
+BEGIN
+   
+   IF length(:new.NO_HP_PELANGGAN) < 12 THEN
+        raise_application_error(-20015, 'Panjang No hp tidak boleh KURANG dari 12 digit');
+END IF;
+   DBMS_OUTPUT.put_line ('HP Pelanggan Lama: ' || :OLD.NO_HP_PELANGGAN);
+   DBMS_OUTPUT.put_line ('HP Palanggan Baru: ' || :NEW.NO_HP_PELANGGAN);
+END; 
+
+Penjelesanan : dikarenakan NO HP PELANGGAN Hanya 12 digit , maka kami set TRIGGER AFTER update NO HP PELANGGAN tidak bisa kurang
+dari 12 digit.
+UPDATE PELANGGAN SET NO_HP_PELANGGAN ='08950108'
+WHERE NAMA PELANGGAN = 'Bambang'
+====================================================================================================
+CREATE OR REPLACE TRIGGER NO_HP_PELANGGAN_KURANG12DIGIT_AFTER_INSERT
+   AFTER INSERT 
+   ON PELANGGAN 
+   FOR EACH ROW
+DECLARE
+   
+BEGIN
+   
+   IF length(:new.NO_HP_PELANGGAN) < 12 THEN
+        raise_application_error(-20015, 'Panjang No hp tidak boleh KURANG dari 12 digit');
+END IF;
+END; 
+
+Penjelesanan : dikarenakan NO HP PELANGGAN Hanya 12 digit , maka kami set TRIGGER AFTER Insert NO HP PELANGGAN tidak bisa kurang
+dari 12 digit.
+INSERT INTO PELANGGAN VALUES('PELANGGAN010','Bahri','Mlinjo','08950108')
+
+====================================================================================================
+CREATE OR REPLACE TRIGGER JUMLAH_BARANG_KURANG_DARI_5_AFTER_UPDATE
+   AFTER UPDATE 
+   ON BARANG 
+   FOR EACH ROW
+DECLARE
+   
+BEGIN
+   
+   IF (:new.JUMLAH_BARANG) < 5 THEN
+        raise_application_error(-20015, 'Jumlah Barang harus lebih dari 5');
+END IF;
+   DBMS_OUTPUT.put_line ('Jumlah Barang Lama: ' || :OLD.JUMLAH_BARANG );
+   DBMS_OUTPUT.put_line ('Jumlah Barang Baru: ' || :NEW.JUMLAH_BARANG);
+END; 
+
+Penjelasan : di tabel barang, jumlah barang AFTER Update tidak bisa kurang dari lima, harus lebih dari lima
+UPDATE BARANG SET JUMLAH_BARANG = '3'
+WHERE NAMA_BARANG = 'KAYU JATI'
+====================================================================================================
+
+CREATE OR REPLACE TRIGGER JUMLAH_BARANG_KURANG_DARI_5_AFTER_INSERT
+   AFTER INSERT 
+   ON BARANG 
+   FOR EACH ROW
+DECLARE
+   
+BEGIN
+   
+   IF (:new.JUMLAH_BARANG) < 5 THEN
+        raise_application_error(-20015, 'Jumlah Barang harus lebih dari 5');
+END IF;
+END; 
+
+Penjelasan : di tabel barang, jumlah barang AFTER Insert tidak bisa kurang dari lima, harus lebih dari lima
+INSERT INTO BARANG VALUES('BARANG001','MEJA','Rp 450.000','4')
+
+====================================================================================================
+CREATE OR REPLACE TRIGGER HISTORY_TRANSAKSI
+   BEFORE UPDATE 
+   ON TRANSAKSI
+   FOR EACH ROW
+DECLARE
+
+BEGIN
+
+INSERT INTO HISTORY_TRANSAKSI VALUES(
+:OLD.ID_TRANSAKSI,
+:OLD.KODE_BARANG,
+:OLD.NAMA_BARANG,
+:OLD.JUMLAH_PEMBELIAN_BARANG,
+:OLD.HARGA_SATUAN_BARANG,
+:OLD.TANGGAL_TRANSAKSI,
+);
+END;
+
+UPDATE BARANG SET NAMA_BARANG='KURSI' WHERE ID_TRANSAKSI = 'TRANSAKSI001';
+
+SELECT * FROM HISTORY_TRANSAKSI;
+
+
+:OLD.ID_EKSPEDISI,
+:OLD.ID_PELANGGAN,
+:OLD.ID_PEGAWAI,
+:OLD.ID_BARANG
